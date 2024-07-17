@@ -2,9 +2,11 @@ import yfinance as yf
 
 
 def get_stock_info(ticker):
-    stock_info = yf.Ticker(ticker)
-    stock_info_wanted = {
-        i: (stock_info.info[i] if i in stock_info.info else i)
+
+    company_data = yf.Ticker(ticker)
+
+    company_data_cleaned = {
+        i: (company_data.info[i] if i in company_data.info else None)
         for i in [
             "marketCap",
             "shortName",
@@ -32,4 +34,8 @@ def get_stock_info(ticker):
         ]
     }
 
-    return stock_info_wanted
+    # catch if the stock is not found
+    if company_data_cleaned["longName"] == "longName":
+        return False
+
+    return company_data_cleaned

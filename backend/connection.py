@@ -28,11 +28,14 @@ def create_database(dbname):
     except Exception as e:
         print(f"Failed to create database: {e}")
 
+def db_connection():
+    return sqlalchemy.create_engine(f'postgresql+psycopg2://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["dbname"]}')
 
-create_database(db_params["dbname"])
 
-engine = sqlalchemy.create_engine(
-    # "postgresql+psycopg2:///filipe:mysecretword123@localhost/nobel_winners", echo=True
-    f'postgresql+psycopg2://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["dbname"]}'
-)
+# create_database(db_params["dbname"])
+
+# engine = sqlalchemy.create_engine(
+#     # "postgresql+psycopg2:///filipe:mysecretword123@localhost/nobel_winners", echo=True
+#     f'postgresql+psycopg2://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["dbname"]}'
+# )
 

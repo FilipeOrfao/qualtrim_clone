@@ -23,12 +23,15 @@ def get_health():
 
 # http://127.0.0.1:8000/api/thing?thing=35325
 @app.get("/api/thing")
-async def get_health(request: Request):
-    company_info = get_stock_info("msft")
-    # if not company_info:
-    #     catch if shit goes wrong
+async def stock_info(request: Request, thing):
+    company_info = get_stock_info(thing)
 
-    # return {**get_stock_info(thing)}
+    if not company_info:
+        return template_obj.TemplateResponse(
+            name="index.html",
+            context={"request": request, "info": {"error": "nothing found"}},
+        )
+
     return template_obj.TemplateResponse(
         name="index.html",
         context={"request": request, "info": company_info},

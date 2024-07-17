@@ -8,9 +8,17 @@
   <body>
     {{ info.longName }}
     <div>
+      {% if 'error' in info %}
+      <!-- br -->
+      sorry no compay found with that name
+      <!-- br -->
+      {% else %}
+      <!-- br -->
       {% for i in info %}
       <p>{{ i }} : {{ info[i] }}</p>
       {% endfor %}
+      <!-- br -->
+      {% endif %}
     </div>
   </body>
 </html>
