@@ -57,10 +57,10 @@ def get_stock_info(ticker):
     # Calculate EV/EBITDA ratio
     ev_to_ebitda = enterprise_value / ebitda
 
+    company_data_cleaned["evToEbitda"] = ev_to_ebitda
+
     company_data_cleaned["free cash flow yield"] = (
         company_data.info["freeCashflow"] / company_data.info["marketCap"]
     )
-
-    company_data_cleaned["evToEbitda"] = ev_to_ebitda
 
     return company_data_cleaned
