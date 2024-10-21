@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  db:
+    restart: always
+    image: postgres:15
+    container_name: qualtrim_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "5333:${PG_PORT}"
+
+  web:
+    restart: always
+    build: ./qualtrim_clone
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./qualtrim_clone:/usr/src/qualtrim_clone
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      POSTGRES_DB: ${PG_DATABASE}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_HOST: ${PG_HOST}
+      # POSTGRES_PORT: 5333
+
+volumes:
+  postgres_data:

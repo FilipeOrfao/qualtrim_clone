@@ -2,4 +2,6 @@ venv
 **/.pycache
 **/__pycache__
 .env*
+.venv
 main.ipynb
+Screenshot_2024-05-28_22-46-13.png

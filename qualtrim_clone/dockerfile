@@ -1,0 +1,15 @@
+FROM python:3.12-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set the working directory in the container
+WORKDIR /qualtrim_clone
+
+# Install dependencies
+COPY requirements.txt /qualtrim_clone/
+RUN pip install -r requirements.txt
+
+# Copy the Django project files into the container
+COPY . /qualtrim_clone/
