@@ -17,11 +17,10 @@ services:
   web:
     restart: always
     build: ./qualtrim_clone
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./qualtrim_clone:/usr/src/qualtrim_clone
     ports:
-      - "8000:8000"
+      - "8001:8000"
     depends_on:
       - db
     environment:
