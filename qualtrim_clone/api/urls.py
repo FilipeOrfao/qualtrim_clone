@@ -6,6 +6,7 @@ app_name = "api"
 
 urlpatterns = [
     path("health/", views.health_check, name="health"),
+    path("home/", views.home, name="home"),
     path(
         "dollar_cost_average/<str:ticker>/",
         views.dollar_cost_average,

@@ -1,0 +1,8 @@
+{% extends "api/base.html" %} {% block content %}
+
+<h1>{{ticker}}</h1>
+
+{% for d in data %}
+<p>{{ d.Date }}</p>
+
+{% endfor %} {% endblock content %}

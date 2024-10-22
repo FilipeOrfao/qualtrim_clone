@@ -12,6 +12,10 @@ def health_check(request):
     return JsonResponse({"health": "ok"})
 
 
+def home(request):
+    return render(request, "api/base.html", {"hello": "this is a greating"})
+
+
 def dollar_cost_average(request, ticker):
     start_date = "2017-01-01"
     end_date = "2024-01-01"
@@ -45,7 +49,9 @@ def dollar_cost_average(request, ticker):
                 "Portfolio Value": total_shares * price,
             }
         )
-    # dca_log = pd.DataFrame(dca_log)
-    # print(dca_log)
+    dca_log = pd.DataFrame(dca_log)
+    dca_log = dca_log.to_dict("records")
 
+    content = {"ticker": ticker, "data": dca_log}
+    return render(request, "api/dolar_cost_average.html", content)
     return JsonResponse({"ticker": ticker, "data": dca_log})
