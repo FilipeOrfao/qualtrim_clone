@@ -28,7 +28,7 @@ def dollar_cost_average(request, ticker):
     data = yf.download(ticker, start=start_date, end=end_date)
     data = data.dropna()
 
-    resampled_data = data.resample(interval).first()
+    resampled_data = data.resample(interval).last()
 
     total_investement = 0
     total_shares = 0
@@ -42,16 +42,17 @@ def dollar_cost_average(request, ticker):
 
         dca_log.append(
             {
-                "Date": date,
-                "Price": price,
-                "Total Shares": total_shares,
-                "Total Investment": total_investement,
-                "Portfolio Value": total_shares * price,
+                "date": date,
+                "price": price,
+                "total_shares": total_shares,
+                "total_investment": total_investement,
+                "portfolio_value": total_shares * price,
             }
         )
+
     dca_log = pd.DataFrame(dca_log)
     dca_log = dca_log.to_dict("records")
 
     content = {"ticker": ticker, "data": dca_log}
-    return render(request, "api/dolar_cost_average.html", content)
+    return render(request, "api/dollar_cost_average.html", content)
     return JsonResponse({"ticker": ticker, "data": dca_log})

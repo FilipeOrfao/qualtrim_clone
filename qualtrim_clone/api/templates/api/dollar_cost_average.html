@@ -2,7 +2,26 @@
 
 <h1>{{ticker}}</h1>
 
-{% for d in data %}
-<p>{{ d.Date }}</p>
-
-{% endfor %} {% endblock content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Price</th>
+      <th scope="col">Total Shares</th>
+      <th scope="col">Total Investment</th>
+      <th scope="col">Portfolio Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in data %}
+    <tr>
+      <td>{{d.date}}</td>
+      <td>{{d.price}}</td>
+      <td>{{d.total_shares}}</td>
+      <td>{{d.total_investment}}</td>
+      <td>{{d.portfolio_value}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
