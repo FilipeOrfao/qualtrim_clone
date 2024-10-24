@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import pandas as pd
 import datetime
+import json
 
 # import matplotlib.pyplot as plt
 import yfinance as yf
@@ -28,6 +29,7 @@ def dollar_cost_average(request, ticker):
     data = yf.download(ticker, start=start_date, end=end_date)
     data = data.dropna()
 
+    # add a try here because sometime it can not reach the yfinance and the dataframe is empty
     resampled_data = data.resample(interval).last()
 
     total_investement = 0
@@ -53,6 +55,9 @@ def dollar_cost_average(request, ticker):
     dca_log = pd.DataFrame(dca_log)
     dca_log = dca_log.to_dict("records")
 
-    content = {"ticker": ticker, "data": dca_log}
+    for i in dca_log:
+        i["date"] = i["date"].isoformat()
+
+    content = {"ticker": ticker, "data": dca_log, "json_data": json.dumps(dca_log)}
     return render(request, "api/dollar_cost_average.html", content)
     return JsonResponse({"ticker": ticker, "data": dca_log})

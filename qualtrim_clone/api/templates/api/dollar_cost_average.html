@@ -24,4 +24,93 @@
     {% endfor %}
   </tbody>
 </table>
+<div class="graph"></div>
+<svg width="600" height="400"></svg>
+
+<script>
+  var data = JSON.parse("{{json_data|escapejs}}");
+
+  //const width = 928;
+  //const height = 500;
+  //const marginTop = 20;
+  //const marginRight = 30;
+  //const marginBottom = 30;
+  //const marginLeft = 40;
+  //
+  //// Declare the x (horizontal position) scale.
+  //const x = d3.scaleUtc(
+  //  d3.extent(json_data, (d) => d.date),
+  //  [marginLeft, width - marginRight]
+  //);
+  //
+  //// Declare the y (vertical position) scale.
+  //const y = d3.scaleLinear(
+  //  [0, d3.max(json_data, (d) => d.close)],
+  //  [height - marginBottom, marginTop]
+  //);
+
+  // Set dimensions and margins
+  var svgWidth = 600,
+    svgHeight = 400;
+  var margin = { top: 20, right: 30, bottom: 40, left: 40 };
+  var width = svgWidth - margin.left - margin.right;
+  var height = svgHeight - margin.top - margin.bottom;
+
+  var svg = d3
+    .select("svg")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Set up the scales
+  var x = d3
+    .scaleBand()
+    .domain(
+      data.map(function (d) {
+        return d.category;
+      })
+    )
+    .range([0, width])
+    .padding(0.1);
+
+  var y = d3
+    .scaleLinear()
+    .domain([
+      0,
+      d3.max(data, function (d) {
+        return d.value;
+      }),
+    ])
+    .nice()
+    .range([height, 0]);
+
+  // Add the bars
+  svg
+    .selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", function (d) {
+      return x(d.category);
+    })
+    .attr("y", function (d) {
+      return y(d.value);
+    })
+    .attr("width", x.bandwidth())
+    .attr("height", function (d) {
+      return height - y(d.value);
+    });
+
+  // Add the x-axis
+  svg
+    .append("g")
+    .attr("class", "x-axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x));
+
+  // Add the y-axis
+  svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+</script>
 {% endblock content %}
