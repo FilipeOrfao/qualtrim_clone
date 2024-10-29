@@ -57,6 +57,7 @@ def dollar_cost_average(request, ticker):
 
     for i in dca_log:
         i["date"] = i["date"].isoformat()
+        # i["price"] = round(i["price"])
 
     content = {"ticker": ticker, "data": dca_log, "json_data": json.dumps(dca_log)}
     return render(request, "api/dollar_cost_average.html", content)

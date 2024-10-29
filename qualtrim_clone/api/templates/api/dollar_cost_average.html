@@ -24,93 +24,116 @@
     {% endfor %}
   </tbody>
 </table>
-<div class="graph"></div>
-<svg width="600" height="400"></svg>
+
+<div id="chart">
+  <div id="tooltip"></div>
+</div>
 
 <script>
-  var data = JSON.parse("{{json_data|escapejs}}");
+  var json_data = JSON.parse("{{ json_data|escapejs }}");
 
-  //const width = 928;
-  //const height = 500;
-  //const marginTop = 20;
-  //const marginRight = 30;
-  //const marginBottom = 30;
-  //const marginLeft = 40;
-  //
-  //// Declare the x (horizontal position) scale.
-  //const x = d3.scaleUtc(
-  //  d3.extent(json_data, (d) => d.date),
-  //  [marginLeft, width - marginRight]
-  //);
-  //
-  //// Declare the y (vertical position) scale.
-  //const y = d3.scaleLinear(
-  //  [0, d3.max(json_data, (d) => d.close)],
-  //  [height - marginBottom, marginTop]
-  //);
+  console.log(json_data);
 
-  // Set dimensions and margins
-  var svgWidth = 600,
-    svgHeight = 400;
-  var margin = { top: 20, right: 30, bottom: 40, left: 40 };
-  var width = svgWidth - margin.left - margin.right;
-  var height = svgHeight - margin.top - margin.bottom;
+  json_data.forEach(function (d) {
+    d.date = new Date(d.date);
+    d.price = +d.price;
+    d.total_shares = +d.total_shares;
+    d.total_investment = +d.total_investment;
+    d.portfolio_value = +d.portfolio_value;
+  });
+
+  var margin = { top: 20, right: 20, bottom: 70, left: 50 },
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
   var svg = d3
-    .select("svg")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight)
+    .select("#chart")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Set up the scales
-  var x = d3
-    .scaleBand()
+  var xscale = d3
+    .scaleTime()
     .domain(
-      data.map(function (d) {
-        return d.category;
+      d3.extent(json_data, function (d) {
+        return d.date;
       })
     )
-    .range([0, width])
-    .padding(0.1);
+    .range([0, width]);
 
-  var y = d3
+  var yscale = d3
     .scaleLinear()
-    .domain([
-      0,
-      d3.max(data, function (d) {
-        return d.value;
-      }),
-    ])
-    .nice()
+    .domain([0, d3.max(json_data, (d) => d.price) * 1.1])
     .range([height, 0]);
 
-  // Add the bars
-  svg
-    .selectAll(".bar")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("class", "bar")
-    .attr("x", function (d) {
-      return x(d.category);
-    })
-    .attr("y", function (d) {
-      return y(d.value);
-    })
-    .attr("width", x.bandwidth())
-    .attr("height", function (d) {
-      return height - y(d.value);
-    });
+  var line = d3
+    .line()
+    .x((d) => xscale(d.date))
+    .y((d) => yscale(d.price));
 
-  // Add the x-axis
   svg
     .append("g")
-    .attr("class", "x-axis")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(xscale).tickFormat(d3.timeFormat("%Y-%m-%d")))
+    .selectAll("text")
+    .attr("transform", "rotate(45)")
+    .style("text-anchor", "start");
 
-  // Add the y-axis
-  svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+  svg.append("g").call(d3.axisLeft(yscale));
+
+  svg
+    .append("path")
+    .datum(json_data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 2)
+    .attr("d", line);
+
+  // money invested
+  var yscale_invested = d3
+    .scaleLinear()
+    .domain([0, d3.max(json_data, (d) => d.total_investment) * 1.1])
+    .range([height, 0]);
+
+  var line_invested = d3
+    .line()
+    .x((d) => xscale(d.date))
+    .y((d) => yscale_invested(d.total_investment));
+
+  svg.append("g").attr("fill", "red").call(d3.axisLeft(yscale_invested));
+
+  svg
+    .append("path")
+    .datum(json_data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "red")
+    .attr("stroke-width", 2)
+    .attr("d", line_invested);
+
+  // money portfolio value
+  var yscale_value = d3
+    .scaleLinear()
+    .domain([0, d3.max(json_data, (d) => d.portfolio_value) * 1.1])
+    .range([height, 0]);
+
+  var line_value = d3
+    .line()
+    .x((d) => xscale(d.date))
+    .y((d) => yscale_value(d.portfolio_value));
+
+  svg.append("g").attr("fill", "red").call(d3.axisLeft(yscale_value));
+
+  svg
+    .append("path")
+    .datum(json_data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "green")
+    .attr("stroke-width", 2)
+    .attr("d", line_value);
 </script>
 {% endblock content %}
