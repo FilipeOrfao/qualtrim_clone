@@ -63,16 +63,7 @@
     )
     .range([0, width]);
 
-  var yscale = d3
-    .scaleLinear()
-    .domain([0, d3.max(json_data, (d) => d.price) * 1.1])
-    .range([height, 0]);
-
-  var line = d3
-    .line()
-    .x((d) => xscale(d.date))
-    .y((d) => yscale(d.price));
-
+  // xaxis
   svg
     .append("g")
     .attr("transform", "translate(0," + height + ")")
@@ -80,39 +71,6 @@
     .selectAll("text")
     .attr("transform", "rotate(45)")
     .style("text-anchor", "start");
-
-  svg.append("g").call(d3.axisLeft(yscale));
-
-  svg
-    .append("path")
-    .datum(json_data)
-    .attr("class", "line")
-    .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 2)
-    .attr("d", line);
-
-  // money invested
-  var yscale_invested = d3
-    .scaleLinear()
-    .domain([0, d3.max(json_data, (d) => d.total_investment) * 1.1])
-    .range([height, 0]);
-
-  var line_invested = d3
-    .line()
-    .x((d) => xscale(d.date))
-    .y((d) => yscale_invested(d.total_investment));
-
-  svg.append("g").attr("fill", "red").call(d3.axisLeft(yscale_invested));
-
-  svg
-    .append("path")
-    .datum(json_data)
-    .attr("class", "line")
-    .attr("fill", "none")
-    .attr("stroke", "red")
-    .attr("stroke-width", 2)
-    .attr("d", line_invested);
 
   // money portfolio value
   var yscale_value = d3
@@ -125,15 +83,30 @@
     .x((d) => xscale(d.date))
     .y((d) => yscale_value(d.portfolio_value));
 
-  svg.append("g").attr("fill", "red").call(d3.axisLeft(yscale_value));
+  svg.append("g").call(d3.axisLeft(yscale_value));
 
   svg
     .append("path")
     .datum(json_data)
     .attr("class", "line")
     .attr("fill", "none")
-    .attr("stroke", "green")
+    .attr("stroke", "steelblue")
     .attr("stroke-width", 2)
     .attr("d", line_value);
+
+  // money invested
+  var line_invested = d3
+    .line()
+    .x((d) => xscale(d.date))
+    .y((d) => yscale_value(d.total_investment));
+
+  svg
+    .append("path")
+    .datum(json_data)
+    .attr("class", "line")
+    .attr("fill", "none")
+    .attr("stroke", "red")
+    .attr("stroke-width", 2)
+    .attr("d", line_invested);
 </script>
 {% endblock content %}
